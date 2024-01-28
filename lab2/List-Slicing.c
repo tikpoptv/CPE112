@@ -36,69 +36,78 @@
 // -12 8 1	
 // Output
 // 9 3 6 0 1
-
-
 #include <stdio.h>
 #include <stdlib.h>
 
-
-struct input {
-    int *arr;
-};
-
-void List_Slicing();
-
+// Function to print an array
+void printArray(int arr[], int size) {
+    for (int i = 0; i < size; i++)
+        printf("%d ", arr[i]);
+    printf("\n");
+}
 
 int main() {
+    int n, start, end, step;
 
-    struct input set;
-    int n,start,end,step;
+    // Read the size of the array from the user
+    scanf("%d", &n);
 
-    scanf("%d",&n);
-    set.arr = (int*)malloc(n*sizeof(int));
+    // Allocate memory for an index array with values from -n to -1
+    int* index = (int*)calloc(n, sizeof(int));
+    int re_index = -n;
+    for (int i = 0; i < n; i++)
+        *(index + i) = re_index++;
 
-    for(int i=0;i<n;i++) {
-        scanf("%d",&set.arr[i]);
-    }   
-
-    scanf("%d %d %d",&start,&end,&step);
-
-    List_Slicing(set.arr,start,end,step);
+    // Allocate memory for the array
+    int* arr = (int*)malloc(n * sizeof(int));
     
-    free(set.arr);
+    // Read elements into the array
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
 
+    // Read start, end, and step values
+    scanf("%d", &start);
+    scanf("%d", &end);
+    scanf("%d", &step);
 
+    // Adjust start and end values if negative or out of bounds
+    if (start < 0) {
+        if (start < *(index + 0))
+            start = 0;
+        for (int i = 0; i < n; i++)
+            if (start == *(index + i))
+                start = i;
+    }
+
+    if (end < 0) {
+        if (end < *(index + 0))
+            end = 0;
+        for (int i = 0; i < n; i++)
+            if (end == *(index + i))
+                end = i;
+    }
+
+    // Print the subarray based on start, end, and step values
+    if ((start < end && step > 0) || (start > end && step < 0)) {
+        if (start > n)
+            start = n - 1;
+        if (end > n)
+            end = n;
+
+        if (start < end && step > 0)
+            for (int i = start; i < end; i += step)
+                printf("%d ", arr[i]);
+        else if (start > end && step < 0)
+            for (int i = start; i > end; i += step)
+                printf("%d ", arr[i]);
+    } else {
+        printf("empty");
+    }
+
+    // Free the allocated memory
+    free(index);
+    free(arr);
+
+    return 0;
 }
 
-void List_Slicing(int *arr, int start, int end, int step) {
-    
-        int i = start;
-        int j = 0;
-        int *new_arr;
-    
-        if (step > 0) {
-            new_arr = (int*)malloc((end-start)/step*sizeof(int));
-            while(i < end) {
-                new_arr[j] = arr[i];
-                i += step;
-                j++;
-            }
-        }
-        else if (step < 0) {
-            new_arr = (int*)malloc((start-end)/step*sizeof(int));
-            while(i > end) {
-                new_arr[j] = arr[i];
-                i += step;
-                j++;
-            }
-        }
-        else {
-            printf("empty");
-        }
-    
-        for(int i=0;i<j;i++) {
-            printf("%d ",new_arr[i]);
-        }
-        printf("\n");
-
-}

@@ -23,14 +23,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define Maxnum 1000000
+
 int main() {
-    int* arr1 = (int*)malloc(1000000 * sizeof(int));
-    int* arr2 = (int*)calloc(1000000, sizeof(int));
+
+    int* arr1 = (int*)malloc(Maxnum * sizeof(int));
+    int* arr2 = (int*)calloc(Maxnum, sizeof(int));
 
     long long sum = 0;
     long long diff = 0;
 
-    for (int i = 0; i < 1000000; i++) {
+    for (int i = 0; i < Maxnum; i++) {
         arr1[i] = i + 1;
         arr2[i] = i + 1;
         sum += arr1[i];
