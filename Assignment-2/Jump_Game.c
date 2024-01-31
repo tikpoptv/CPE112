@@ -22,10 +22,59 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+struct data {  
+    int *arr;
+};
+
+void jump();
+
+
 int main(){
     
+    int n;
+    scanf("%d",&n);
+    struct data data;
+    data.arr = (int*)malloc(n*sizeof(int));
+    for(int i = 0; i < n; i++){
+        scanf("%d",data.arr + i);
+    }
 
-
+    jump(data,n);
+    
 
     return 0;
+}
+
+void jump(struct data data, int n) {
+    int jumps = 0;
+    int current = 0;
+    
+    while (current < n - 1) {
+        int max_jump = data.arr[current];
+        
+        if (max_jump == 0) {
+            printf("Not Possible");
+            return;
+        }
+        
+        int next = current;
+        int max_reachable = 0;
+        
+        for (int i = 1; i <= max_jump; i++) {
+            if (current + i >= n - 1) {
+                next = current + i;
+                break;
+            }
+            
+            if (data.arr[current + i] + i > max_reachable) {
+                max_reachable = data.arr[current + i] + i;
+                next = current + i;
+            }
+        }
+        
+        current = next;
+        jumps++;
+    }
+    
+    printf("%d", jumps);
 }
