@@ -34,9 +34,75 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Node
+typedef struct Node
 {
     int data;
     struct Node *next;
-};
+}Node;
 
+void insertAtBeginning(Node **head, int data);
+void insertAtEnd(Node **head, int data);
+
+int main()
+{
+    int n, x;
+    scanf("%d", &n);
+    if (n < 1)
+    {
+        printf("Invalid");
+        return 0;
+    }
+    scanf("%d", &x);
+    if (x != 1 && x != 2)
+    {
+        printf("Invalid");
+        return 0;
+    }
+    struct Node *head = NULL;
+    for (int i = 0; i < n; i++)
+    {
+        int data;
+        scanf("%d", &data);
+        if (x == 1)
+        {
+            insertAtBeginning(&head, data);
+        }
+        else
+        {
+            insertAtEnd(&head, data);
+        }
+    }
+    struct Node *temp = head;
+    while (temp != NULL)
+    {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    return 0;
+}
+
+void insertAtBeginning(Node **head, int data)
+{
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->next = *head;
+    *head = newNode;
+}
+
+void insertAtEnd(Node **head, int data)
+{
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    if (*head == NULL)
+    {
+        *head = newNode;
+        return;
+    }
+    struct Node *temp = *head;
+    while (temp->next != NULL)
+    {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+}
