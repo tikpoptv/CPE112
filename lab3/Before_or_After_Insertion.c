@@ -102,33 +102,44 @@ int main() {
 
 
 void addAfter(Node* head, int prepre, int newData) {
+    // Allocate memory for new node
     Node* newNode = (Node*)malloc(sizeof(Node));
     newNode->data = newData;
     newNode->next = NULL;
 
+
+    // Initialize current node to head
     Node* curr = head;
+    // Traverse the list until end
     while (curr != NULL) {
+        // If current node's data matches prepre
         if (curr->data == prepre) {
             newNode->next = curr->next;
+            // Set current node's next to newNode
             curr->next = newNode;
             return;
         }
+        // Move to next node
+
         curr = curr->next;
     }
 
 }
 
 void addBefore(Node** head, int nextData, int newData) {
+    // Allocate memory for new node
     Node* newNode = (Node*)malloc(sizeof(Node));
     newNode->data = newData;
     newNode->next = NULL;
 
+    // Check if list is empty
     if (*head == NULL) {
         printf("Error\n");
         free(newNode);
         return;
     }
 
+    // Add new node at beginning of list
     if ((*head)->data == nextData) {
         newNode->next = *head;
         *head = newNode;
@@ -136,16 +147,20 @@ void addBefore(Node** head, int nextData, int newData) {
     }
 
     Node* curr = *head;
+    // Traverse list to find position before nextData
     while (curr->next != NULL && curr->next->data != nextData) {
         curr = curr->next;
     }
 
+    // Error if nextData not found in list
     if (curr->next == NULL) {
         // printf("Error");
         free(newNode);
         return;
     }
 
+
+    // Add new node before node with data = nextData
     newNode->next = curr->next;
     curr->next = newNode;
 }
