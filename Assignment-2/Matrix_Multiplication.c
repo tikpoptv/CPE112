@@ -65,7 +65,7 @@ int main() {
 
     jumps(matrix, m1, m2, m3, m4);
 
-    for (int i = 0; i < m1; i++) { // ทำเพื่อปลดหน่วยคำนวณทีละแถวไม่งั้น เดี๋ยวมัน leak
+    for (int i = 0; i < m1; i++) {  
         free(matrix.matrix1[i]);
     }
     free(matrix.matrix1);
