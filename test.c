@@ -1,63 +1,109 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct node {
+typedef struct Node {
     int data;
-    struct node *next;
-    char option;
-} node;
+    struct Node* next;
+    struct Node* prev;
+} Node;
 
-void insertbefore(struct node *input, int pos, int val) {
-    struct node *newNode, *ptr, *prePtr;
-
-    newNode = (struct node*)malloc(sizeof(node));
-    newNode -> data = val;
+Node* createNode(int data) {
+    Node* newNode = (Node*) malloc(sizeof(Node));
+    newNode->data = data;
     newNode->next = NULL;
-
-    if (input == NULL) {
-        printf("List is empty\n");
-        return;
-    }
-
-    if (pos == 0) {
-        newNode->next = input;
-        input = newNode;
-        return;
-    }
-
-    ptr = input;
-    prePtr = NULL;
-    int i = 0;
-    while (ptr != NULL && i < pos) {
-        prePtr = ptr;
-        ptr = ptr->next;
-        i++;
-    }
-
-    if (ptr == NULL) {
-        printf("Position out of range\n");
-        return;
-    }
-
-    newNode->next = ptr;
-    prePtr->next = newNode;
+    newNode->prev = NULL;
+    return newNode;
 }
 
-void printList(struct node *head) {
-    struct node *ptr = head;
-    while (ptr != NULL) {
-        printf("%d -> ", ptr->data);
-        ptr = ptr->next;
+void addNode(Node** head, int data) {
+    Node* newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+    } else {
+        Node* temp = *head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+        newNode->prev = temp;
     }
-    printf("NULL\n");
+}
+
+void delNode(Node** head, int data) {
+    Node* temp = *head;
+    while (temp != NULL) {
+        if (temp->data == data) {
+            if (temp->prev != NULL) {
+                temp->prev->next = temp->next;
+            } else {
+                *head = temp->next;
+            }
+            if (temp->next != NULL) {
+                temp->next->prev = temp->prev;
+            }
+            free(temp);
+            return;
+        }
+        temp = temp->next;
+    }
+}
+
+void schNode(Node* head, int data) {
+    Node* temp = head;
+    while (temp != NULL) {
+        if (temp->data == data) {
+            if (temp->prev != NULL) {
+                printf("%d ", temp->prev->data);
+            } else {
+                printf("none ");
+            }
+            if (temp->next != NULL) {
+                printf("%d\n", temp->next->data);
+            } else {
+                printf("none\n");
+            }
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("none none\n");
+}
+
+void printList(Node* head) {
+    Node* temp = head;
+    printf("Forward: ");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+    temp = head;
+    printf("Backward: ");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->prev;
+    }
+    printf("\n");
 }
 
 int main() {
-    struct node *head = NULL;
-    insertbefore(head, 0, 10);
-    insertbefore(head, 0, 20);
-    insertbefore(head, 1, 30);
-    insertbefore(head, 2, 40);
+    Node* head = NULL;
+    char command[4];
+    int data;
+    while (1) {
+        scanf("%s", command);
+        if (strcmp(command, "END") == 0) {
+            break;
+        }
+        scanf("%d", &data);
+        if (strcmp(command, "ADD") == 0) {
+            addNode(&head, data);
+        } else if (strcmp(command, "DEL") == 0) {
+            delNode(&head, data);
+        } else if (strcmp(command, "SCH") == 0) {
+            schNode(head, data);
+        }
+    }
     printList(head);
     return 0;
 }
