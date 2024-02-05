@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 // Define the Node structure for a linked list
-typedef struct Node
+typedef struct Node // Jedsadaporn Pannok No.66070503410
 {
     int data;
     struct Node *next;

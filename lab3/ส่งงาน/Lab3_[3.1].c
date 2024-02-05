@@ -6,7 +6,7 @@ typedef struct Node
 {
     int data;
     struct Node *next;
-} Node;
+} Node; // Jedsadaporn Pannok No.66070503410
 
 // Function to insert a node at the beginning of the linked list
 void insertAtBeginning();

@@ -4,7 +4,7 @@
 // Define the Node structure for a linked list
 typedef struct Node {
     int data;
-    struct Node* next;
+    struct Node* next; // Jedsadaporn Pannok No.66070503410
 } Node;
 
 // Function prototypes
