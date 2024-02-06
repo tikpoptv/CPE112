@@ -1,109 +1,64 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 
-typedef struct Node {
+typedef struct node
+{
     int data;
-    struct Node* next;
-    struct Node* prev;
-} Node;
+    struct node *next;
+}node;
 
-Node* createNode(int data) {
-    Node* newNode = (Node*) malloc(sizeof(Node));
-    newNode->data = data;
-    newNode->next = NULL;
-    newNode->prev = NULL;
-    return newNode;
-}
+void insertnode(node **start, int value)
+{
+    node *newnode = (node*)malloc(sizeof(node));
+    newnode ->data = value;
+    newnode ->next = NULL;
 
-void addNode(Node** head, int data) {
-    Node* newNode = createNode(data);
-    if (*head == NULL) {
-        *head = newNode;
-    } else {
-        Node* temp = *head;
-        while (temp->next != NULL) {
-            temp = temp->next;
-        }
-        temp->next = newNode;
-        newNode->prev = temp;
+    if(*start==NULL)
+    {
+        *start = newnode;
+        return;
     }
-}
-
-void delNode(Node** head, int data) {
-    Node* temp = *head;
-    while (temp != NULL) {
-        if (temp->data == data) {
-            if (temp->prev != NULL) {
-                temp->prev->next = temp->next;
-            } else {
-                *head = temp->next;
-            }
-            if (temp->next != NULL) {
-                temp->next->prev = temp->prev;
-            }
-            free(temp);
-            return;
-        }
+    node *temp = *start;
+    while (temp->next != NULL)
+    {
         temp = temp->next;
     }
+    temp->next = newnode;
+
 }
 
-void schNode(Node* head, int data) {
-    Node* temp = head;
-    while (temp != NULL) {
-        if (temp->data == data) {
-            if (temp->prev != NULL) {
-                printf("%d ", temp->prev->data);
-            } else {
-                printf("none ");
-            }
-            if (temp->next != NULL) {
-                printf("%d\n", temp->next->data);
-            } else {
-                printf("none\n");
-            }
-            return;
-        }
-        temp = temp->next;
-    }
-    printf("none none\n");
-}
+int main(void){
+    int start, end;
 
-void printList(Node* head) {
-    Node* temp = head;
-    printf("Forward: ");
-    while (temp != NULL) {
-        printf("%d ", temp->data);
-        temp = temp->next;
-    }
-    printf("\n");
-    temp = head;
-    printf("Backward: ");
-    while (temp != NULL) {
-        printf("%d ", temp->data);
-        temp = temp->prev;
-    }
-    printf("\n");
-}
+    node *mook = NULL;
 
-int main() {
-    Node* head = NULL;
-    char command[4];
-    int data;
-    while (1) {
-        scanf("%s", command);
-        if (strcmp(command, "END") == 0) {
+    while (1)
+    {
+        char value[10];
+        scanf("%s", &value);
+        if (strcmp(value, "END") == 0)
+        {
             break;
-        }
-        scanf("%d", &data);
-        if (strcmp(command, "ADD") == 0) {
-            addNode(&head, data);
-        } else if (strcmp(command, "DEL") == 0) {
-            delNode(&head, data);
-        } else if (strcmp(command, "SCH") == 0) {
-            schNode(head, data);
+        } else {
+            scanf("%d", &value);
+            insertnode(&mook,value);
         }
     }
-    printList(head);
-    return 0;
+    // scanf("%d %d",&start, &end);
+
+    // for(int i=mook;i<start;i++)
+    // {
+    //     printf("%d",value);
+    // }
+
+    // node *temp = mook;
+    //         while (temp -> next != NULL)
+    //         {
+    //             temp = temp->next ;  
+    //         }
+
+
+    
+
 }
