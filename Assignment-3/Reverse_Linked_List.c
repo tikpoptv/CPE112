@@ -38,6 +38,9 @@ typedef struct ListNode
 
 void insertAtEnd();
 void printList();
+void begin();
+
+void Reverse();
 
 int main()
 {
@@ -59,31 +62,27 @@ int main()
         }
     }
 
-    int st, en;
-    scanf("%d %d", &st, &en);
+    int st,en; scanf("%d %d",&st,&en);
     ListNode *ptr = head;
-    for (int i = 1; i < st; i++)
-    {
-        printf("%d ", ptr->val);
+    for(int i=1;i<st;i++) {
+        printf("%d ",ptr->val);
         ptr = ptr->next;
     }
     ListNode *temp = NULL;
-    for (int i = st; i <= en; i++)
-    {
-        insertAtEnd(&temp, ptr->val);
+    for(int i=st;i<=en;i++) {
+        begin(&temp,ptr->val);
         ptr = ptr->next;
     }
     ListNode *print = temp;
-    while (print != NULL)
-    {
-        printf("%d ", print->val);
+    while(print != NULL) {
+        printf("%d ",print->val);
         print = print->next;
     }
-    while (ptr != NULL)
-    {
-        printf("%d ", ptr->val);
+    while(ptr != NULL) {
+        printf("%d ",ptr->val);
         ptr = ptr->next;
     }
+
 
 }
 
@@ -115,5 +114,12 @@ void printList(ListNode **head)
         printf("%d ", temp->val);
         temp = temp->next;
     }
+}
+
+void begin(ListNode **temp,int t) {
+    ListNode *new = (ListNode *)malloc(sizeof(ListNode));
+    new->val = t;
+    new->next = *temp;
+    *temp = new;
 }
 
