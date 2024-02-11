@@ -12,7 +12,7 @@ void printArray(int arr[], int size) {
 void adjustStartEnd(int* start, int* end, int n, int* index) {
     // If start is negative, set it to 0 or the nearest valid index
     if (*start < 0) {
-        if (*start < *(index + 0))
+        if (s*start < *(index + 0))
             *start = 0;
         for (int i = 0; i < n; i++)
             if (*start == *(index + i))
