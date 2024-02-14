@@ -11,108 +11,74 @@
 // Output
 // Print “The string is balanced” or “The string is not balanced”
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-typedef struct Stack
-{
-    int top;
-    int max_size;
-    char *array;
-} Stack;
+#include<stdio.h>
+#include<stdlib.h>
 
-Stack *createStack(int size)
-{
-    Stack *stack = (Stack *)malloc(sizeof(Stack));
-    stack->max_size = size;
-    stack->top = -1;
-    stack->array = (char *)malloc(stack->max_size * sizeof(char));
-    return stack;
-}
-
-int isFull(Stack *stack)
-{
-    return stack->top == stack->max_size - 1;
-}
-
-int isEmpty(Stack *stack)
-{
-    return stack->top == -1;
-}
-
-void push(Stack *stack, char item)
-{
-    if (isFull(stack))
-    {
-        printf("invalid\n");
-        exit(0);
-    }
-    stack->array[++stack->top] = item;
-}
-
-char pop(Stack *stack)
-{
-    if (isEmpty(stack))
-    {
-        printf("invalid\n");
-        exit(0);
-    }
-    return stack->array[stack->top--];
-}
-
-char peek(Stack *stack)
-{
-    if (isEmpty(stack))
-    {
-        return '0';
-    }
-    return stack->array[stack->top];
-}
-
-int main()
-{
-    char word[1000];
-    scanf("%s", word);
-    Stack *stack = createStack(strlen(word));
-    for (int i = 0; i < strlen(word); i++)
-    {
-        if (word[i] == '(' || word[i] == '{' || word[i] == '[')
-        {
-            push(stack, word[i]);
+int main() {
+    char word[1000]; 
+    scanf("%s",word);
+    int index = 0;
+    while(word[index] != '\0') index++;
+    index--;
+    int isBalanced = 1;
+    while(index >= 0) {
+        int prevIndex = index;
+        prevIndex--;
+        if(word[index]=='}') {
+            isBalanced = 0;
+            while (prevIndex>=0) {
+                if(word[prevIndex] == '{') {
+                    word[prevIndex] = '\0';
+                    word[index] = '\0';
+                    isBalanced = 1;
+                    break;
+                }
+                prevIndex--;
+            }
+            if(isBalanced == 0) {
+                printf("The string is not balanced\n");
+                return 0;
+            }
+        } else if(word[index] == ')') {
+            isBalanced = 0;
+            while (prevIndex>=0) {
+                if(word[prevIndex] == '(') {
+                    word[prevIndex] = '\0';
+                    word[index] = '\0';
+                    isBalanced = 1;
+                    break;
+                }
+                prevIndex--;
+            }
+            if(isBalanced == 0) {
+                printf("The string is not balanced\n");
+                return 0;
+            }
+        } else if(word[index] == ']') {
+            isBalanced = 0;
+            while (prevIndex>=0) {
+                if(word[prevIndex] == '[') {
+                    word[prevIndex] = '\0';
+                    word[index] = '\0';
+                    isBalanced = 1;
+                    break;
+                }
+                prevIndex--;
+            }
+            if(isBalanced == 0) {
+                printf("The string is not balanced\n");
+                return 0;
+            }
+        } else if(word[index] == '(' || word[index] == '{' || word[index] == '[') {
+            printf("The string is not balanced\n");
+            return 0;
         }
-        else
-        {
-            if (isEmpty(stack))
-            {
-                printf("The string is not balanced\n");
-                return 0;
-            }
-            char temp = pop(stack);
-            if (word[i] == ')' && temp != '(')
-            {
-                printf("The string is not balanced\n");
-                return 0;
-            }
-            else if (word[i] == '}' && temp != '{')
-            {
-                printf("The string is not balanced\n");
-                return 0;
-            }
-            else if (word[i] == ']' && temp != '[')
-            {
-                printf("The string is not balanced\n");
-                return 0;
-            }
-        }
+        index--;
     }
-    if (isEmpty(stack))
-    {
+    if(isBalanced != 0) 
         printf("The string is balanced\n");
-    }
-    else
-    {
+    else 
         printf("The string is not balanced\n");
-    }
     return 0;
 }
