@@ -1,88 +1,103 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h> // ใช้ isalpha() เพื่อตรวจสอบว่าเป็นตัวอักษรหรือไม่
 
-struct Node
-{
-    char data;
-    int priority;
-    struct Node *next;
-};
+typedef struct {
+    int front;
+    int rear;
+    int size;
+    int *queue;
+} Queue;
 
-struct Node *front = NULL;
-
-void enqueue(char x, int p)
-{
-    struct Node *temp = (struct Node *)malloc(sizeof(struct Node));
-    if (temp == NULL)
-    {
-        printf("Memory allocation failed\n");
-        exit(1);
+Queue* createQueue(int size) {
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    if (q == NULL) {
+        printf("Memory allocation failed!\n");
+        exit(EXIT_FAILURE);
     }
-    temp->data = x;
-    temp->priority = p;
-    temp->next = NULL;
-
-    if (front == NULL || p > front->priority)
-    {
-        temp->next = front;
-        front = temp;
+    q->front = 0;
+    q->rear = 0;
+    q->size = size;
+    q->queue = (int*)malloc(size * sizeof(int));
+    if (q->queue == NULL) {
+        printf("Memory allocation failed!\n");
+        exit(EXIT_FAILURE);
     }
-    else
-    {
-        struct Node *start = front;
-        while (start->next != NULL && start->next->priority >= p)
-        {
-            start = start->next;
-        }
-        temp->next = start->next;
-        start->next = temp;
-    }
+    return q;
 }
 
-char dequeue()
-{
-    if (front == NULL)
-    {
-        printf("Queue is empty\n");
-        exit(1);
-    }
-    struct Node *temp = front;
-    front = front->next;
-    char popped = temp->data;
-    free(temp);
-    return popped;
+void freeQueue(Queue* q) {
+    free(q->queue);
+    free(q);
 }
 
-int main()
-{
-    printf("Enter a string: ");
-    char str[100];
-    fgets(str, sizeof(str), stdin); // ใช้ fgets แทน scanf เพื่อรับข้อมูลทั้งบรรทัดรวมช่องว่างได้
+int isFull(Queue *q) {
+    return (q->rear + 1) % q->size == q->front;
+}
 
-    for (int i = 0; str[i] != '\0'; i++)
-    {
-        if (isalpha(str[i])) // ตรวจสอบว่าเป็นตัวอักษรหรือไม่
-        {
-            if (str[i] == 'a' || str[i] == 'e' || str[i] == 'i' || str[i] == 'o' || str[i] == 'u' || str[i] == 'A' || str[i] == 'E' || str[i] == 'I' || str[i] == 'O' || str[i] == 'U')
-            {
-                enqueue(str[i], 3);
-            }
-            else
-            {
-                enqueue(str[i], 1);
-            }
-        }
-        else
-        {
-            enqueue(str[i], 2);
+int isEmpty(Queue *q) {
+    return q->front == q->rear;
+}
+
+void insertQ(Queue *q, int value) {
+    if (isFull(q)) {
+        printf("Queue is full!!\n");
+        return;
+    }
+    q->rear = (q->rear + 1) % q->size;
+    q->queue[q->rear] = value;
+}
+
+int deleteQ(Queue *q) {
+    if (isEmpty(q)) {
+        printf("Queue is empty!!\n");
+        return -1;
+    }
+    int value = q->queue[q->front];
+    q->front = (q->front + 1) % q->size;
+    return value;
+}
+
+void showQ(Queue *q) {
+    int i, count;
+    if (isEmpty(q)) {
+        printf("Queue is empty!!\n");
+        return;
+    }
+    printf("Front: %d\n", q->front);
+    printf("Items: ");
+    count = (q->rear - q->front + q->size) % q->size + 1;
+    for (i = 0; i < count; i++) {
+        printf("%d ", q->queue[(q->front + i) % q->size]);
+    }
+    printf("\nRear: %d\n", q->rear);
+}
+
+int main() {
+    int size, value;
+    char cmd;
+    printf("Enter size of the queue: ");
+    scanf("%d", &size);
+    Queue* q = createQueue(size);
+
+    while (1) {
+        printf("Enter command (E to exit, I to insert, D to delete, S to show): ");
+        scanf(" %c", &cmd);
+        
+        if (cmd == 'E') {
+            break;
+        } else if (cmd == 'I') {
+            printf("Enter value to insert: ");
+            scanf("%d", &value);
+            insertQ(q, value);
+        } else if (cmd == 'D') {
+            printf("Deleted value: %d\n", deleteQ(q));
+        } else if (cmd == 'S') {
+            showQ(q);
+        } else {
+            printf("Invalid command!\n");
         }
     }
 
-    printf("Priority Queue Output: ");
-    while (front != NULL)
-    {
-        printf("%c", dequeue());
-    }
+    freeQueue(q);
     return 0;
 }
