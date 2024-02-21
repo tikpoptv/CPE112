@@ -87,7 +87,7 @@ int isFull(Queue *q)
 // Function to check if the queue is empty
 int isEmpty(Queue *q)
 {
-    return (q->size == 0);    //Jedadaporn Pannok N0.66070503410                         // If the size of the queue is zero, it's empty
+    return (q->size == 0);    //Jedadaporn Pannok N0.66070503410     // If the size of the queue is zero, it's empty
 }
 
 // Function to add data into the queue
