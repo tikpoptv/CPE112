@@ -1,145 +1,228 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct AVL {
-    int *arr;
-    int size;
+// Create Node
+struct Node {
     int key;
+    struct Node *left;
+    struct Node *right;
     int height;
-} AVL;
+};
 
-void init(AVL *t, int n) {
-    t->arr = (AVL *)malloc(sizeof(AVL) * n);
-    t->size = n;
-    for (int i = 0; i < n; i++) {
-        t->arr[i] = NULL;
-    }
+int max(int a, int b);
+
+// Calculate height
+int height(struct Node *N) {
+    if (N == NULL)
+        return 0;
+    return N->height;
 }
 
-void createRoot(AVL *t, int x) {
-    if (t->arr[0] != NULL) {
-        printf("cannot create duplicated root\n");
-    } else {
-        t->arr[0] = x;
-    }
+int max(int a, int b) {
+    return (a > b) ? a : b;
 }
 
-void insertLeft(AVL *t, int x, int y) {
-    int i = 0;
-    while (t->arr[i] != x) {
-        i++;
-        if (i >= t->size) {
-            printf("not found\n");
-            return;
+// Create a node
+struct Node *newNode(int key) {
+    struct Node *node = (struct Node *) malloc(sizeof(struct Node));
+    node->key = key;
+    node->left = NULL;
+    node->right = NULL;
+    node->height = 1;
+    return (node);
+}
+
+// Right rotate
+struct Node *rightRotate(struct Node *y) {
+    struct Node *x = y->left;
+    struct Node *T2 = x->right;
+
+    x->right = y;
+    y->left = T2;
+
+    y->height = max(height(y->left), height(y->right)) + 1;
+    x->height = max(height(x->left), height(x->right)) + 1;
+
+    return x;
+}
+
+// Left rotate
+struct Node *leftRotate(struct Node *x) {
+    struct Node *y = x->right;
+    struct Node *T2 = y->left;
+
+    y->left = x;
+    x->right = T2;
+
+    x->height = max(height(x->left), height(x->right)) + 1;
+    y->height = max(height(y->left), height(y->right)) + 1;
+
+    return y;
+}
+
+// Get the balance factor
+int getBalance(struct Node *N) {
+    if (N == NULL)
+        return 0;
+    return height(N->left) - height(N->right);
+}
+
+// Insert node
+struct Node *insertNode(struct Node *node, int key) {
+    // Find the correct position to insertNode the node and insertNode it
+    if (node == NULL)
+        return (newNode(key));
+
+    if (key < node->key)
+        node->left = insertNode(node->left, key);
+    else if (key > node->key)
+        node->right = insertNode(node->right, key);
+    else
+        return node;
+
+    // Update the balance factor of each node and
+    // Balance the tree
+    node->height = 1 + max(height(node->left), height(node->right));
+
+    int balance = getBalance(node);
+    if (balance > 1 && key < node->left->key)
+        return rightRotate(node);
+
+    if (balance < -1 && key > node->right->key)
+        return leftRotate(node);
+
+    if (balance > 1 && key > node->left->key) {
+        node->left = leftRotate(node->left);
+        return rightRotate(node);
+    }
+
+    if (balance < -1 && key < node->right->key) {
+        node->right = rightRotate(node->right);
+        return leftRotate(node);
+    }
+
+    return node;
+}
+
+struct Node *minValueNode(struct Node *node) {
+    struct Node *current = node;
+
+    while (current->left != NULL)
+        current = current->left;
+
+    return current;
+}
+
+// Delete a node
+struct Node *deleteNode(struct Node *root, int key) {
+    // Base case
+    if (root == NULL) {
+        printf("Node not found.\n");
+        return root;
+    }
+
+    // Search for the node to be deleted
+    if (key < root->key)
+        root->left = deleteNode(root->left, key);
+    else if (key > root->key)
+        root->right = deleteNode(root->right, key);
+    else {
+        // Node found, check for children
+        if (root->left == NULL) {
+            struct Node *temp = root->right;
+            free(root);
+            return temp;
+        } else if (root->right == NULL) {
+            struct Node *temp = root->left;
+            free(root);
+            return temp;
         }
+
+        // Node with two children: Get the inorder successor (smallest
+        // in the right subtree)
+        struct Node *temp = minValueNode(root->right);
+
+        // Copy the inorder successor's data to this node
+        root->key = temp->key;
+
+        // Delete the inorder successor
+        root->right = deleteNode(root->right, temp->key);
     }
-    if (i * 2 + 1 >= t->size) {
-        printf("overflow\n");
-    } else if (t->arr[i * 2 + 1] != NULL) {
-        printf("node already presented\n");
-    } else {
-        t->arr[i * 2 + 1] = y;
+
+    // If the tree had only one node then return
+    if (root == NULL)
+        return root;
+
+    // Update the balance factor of each node and balance the tree
+    root->height = 1 + max(height(root->left), height(root->right));
+
+    int balance = getBalance(root);
+
+    // Left Left Case
+    if (balance > 1 && getBalance(root->left) >= 0)
+        return rightRotate(root);
+
+    // Left Right Case
+    if (balance > 1 && getBalance(root->left) < 0) {
+        root->left = leftRotate(root->left);
+        return rightRotate(root);
     }
+
+    // Right Right Case
+    if (balance < -1 && getBalance(root->right) <= 0)
+        return leftRotate(root);
+
+    // Right Left Case
+    if (balance < -1 && getBalance(root->right) > 0) {
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
+    }
+
+    return root;
 }
 
-void insertRight(AVL *t, int x, int y) {
-    int i = 0;
-    while (t->arr[i] != x) {
-        i++;
-        if (i >= t->size) {
-            printf("not found\n");
-            return;
-        }
-    }
-    if (i * 2 + 2 >= t->size) {
-        printf("overflow\n");
-    } else if (t->arr[i * 2 + 2] != NULL) {
-        printf("node already presented\n");
-    } else {
-        t->arr[i * 2 + 2] = y;
-    }
-}
-
-void leftRotate(AVL *t, int x) {
-    int i = 0;
-    while (t->arr[i] != x) {
-        i++;
-        if (i >= t->size) {
-            printf("not found\n");
-            return;
-        }
-    }
-    if (i * 2 + 2 >= t->size) {
-        printf("cannot rotate\n");
-    } else if (t->arr[i * 2 + 2] == NULL) {
-        printf("cannot rotate\n");
-    } else {
-        int temp = t->arr[i];
-        t->arr[i] = t->arr[i * 2 + 2];
-        t->arr[i * 2 + 2] = t->arr[i * 2 + 2 * 2 + 1];
-        t->arr[i * 2 + 2 * 2 + 1] = temp;
-    }
-}
-
-void rightRotate(AVL *t, int x) {
-    int i = 0;
-    while (t->arr[i] != x) {
-        i++;
-        if (i >= t->size) {
-            printf("not found\n");
-            return;
-        }
-    }
-    if (i * 2 + 1 >= t->size) {
-        printf("cannot rotate\n");
-    } else if (t->arr[i * 2 + 1] == NULL) {
-        printf("cannot rotate\n");
-    } else {
-        int temp = t->arr[i];
-        t->arr[i] = t->arr[i * 2 + 1];
-        t->arr[i * 2 + 1] = t->arr[i * 2 + 1 * 2 + 2];
-        t->arr[i * 2 + 1 * 2 + 2] = temp;
-    }
-}
-
-void printTree(AVL *t) {
-    for (int i = 0; i < t->size; i++) {
-        if (t->arr[i] != NULL) {
-            printf("%d ", t->arr[i]);
-        } else {
-            printf("NULL ");
-        }
+// Print the tree
+void printPreOrder(struct Node *root) {
+    if (root != NULL) {
+        printf("%d ", root->key);
+        printPreOrder(root->left);
+        printPreOrder(root->right);
     }
 }
 
 int main() {
-    AVL t;
-    int n;
-    scanf("%d", &n);
-    init(&t, n);
-    char cmd[10];
-    while (1) {
-        scanf("%s", cmd);
-        if (strcmp(cmd, "INSERT") == 0) {
-            int x, y;
-            scanf("%d %d", &x, &y);
-            createRoot(&t, x);
-            insertLeft(&t, x, y);
-            insertRight(&t, x, y);
-        } else if (strcmp(cmd, "DELETE") == 0) {
-            int x;
-            scanf("%d", &x);
-            leftRotate(&t, x);
-            rightRotate(&t, x);
-        } else if (strcmp(cmd, "PRINT") == 0) {
-            printTree(&t);
-        } else if (strcmp(cmd, "EXIT") == 0) {
-            break;
+    struct Node *root = NULL;
+
+    char command[10];
+    int key;
+    int exit_flag = 0;
+
+    while (!exit_flag) {
+        scanf("%s", command);
+
+        if (strcmp(command, "INSERT") == 0) {
+            while (scanf("%d", &key) == 1) {
+                root = insertNode(root, key);
+            }
+        } else if (strcmp(command, "PRINT") == 0) {
+            if (root == NULL)
+                printf("Tree is empty.");
+            else
+                printPreOrder(root);
+            printf("\n");
+        } else if (strcmp(command, "DELETE") == 0) {
+            while (scanf("%d", &key) == 1) {
+                root = deleteNode(root, key);
+            }
+        } else if (strcmp(command, "EXIT") == 0) {
+            exit_flag = 1;
         } else {
-            printf("Invalid Command.\n");
+            printf("Invalid command.\n");
+            // Clear input buffer
+            while (getchar() != '\n');
         }
     }
-    free(t.arr);
+
+    return 0;
 }
