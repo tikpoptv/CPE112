@@ -33,7 +33,7 @@ struct Node *newNode(int key) {
     node->height = 1; // Set height of the new node as 1
     return (node);
 }
-
+.k
 // Right rotate subtree rooted with y
 struct Node *rightRotate(struct Node *y) {
     struct Node *x = y->left; // Store the left child of y as x
